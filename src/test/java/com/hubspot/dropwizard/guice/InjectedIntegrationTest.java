@@ -68,4 +68,18 @@ public class InjectedIntegrationTest {
         assertThat(message).isEqualTo("this DAO was bound just-in-time");
     }
 
+
+    @Test
+    public void shouldUseServlet() {
+
+        // when
+        final String message = client.target(
+                String.format("http://localhost:%d/test/servlet", RULE.getLocalPort()))
+                .request()
+                .get(String.class);
+
+        // then
+        assertThat(message).isEqualTo("from the servlet");
+    }
+
 }

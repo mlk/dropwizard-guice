@@ -1,7 +1,9 @@
 package com.hubspot.dropwizard.guice;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.inject.ImplementedBy;
+import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.ProvidedBy;
 import io.dropwizard.Bundle;
@@ -10,8 +12,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import com.google.common.base.Preconditions;
-import com.google.inject.Injector;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.model.Resource;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -22,6 +23,7 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServlet;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
@@ -52,6 +54,7 @@ public class AutoConfig {
     addHealthChecks(environment, injector);
     addProviders(environment);
     addResources(environment);
+    addServlet(environment, injector);
     addTasks(environment, injector);
     addManaged(environment, injector);
     addParamConverterProviders(environment);
@@ -117,6 +120,18 @@ public class AutoConfig {
       }
     }
   }
+
+  private void addServlet(Environment environment, Injector injector) {
+    Set<Class<? extends HttpServlet>> servletClasses = reflections.getSubTypesOf(HttpServlet.class);
+    for (Class<? extends HttpServlet> servlet : servletClasses) {
+      ServletPath path = servlet.getAnnotation(ServletPath.class);
+      if(path != null) {
+        environment.getApplicationContext().addServlet(new ServletHolder(path.value(), injector.getInstance(servlet)), path.value());
+        logger.info("Added servlet class: {}", servlet);
+      }
+    }
+  }
+
 
   private void addBundles(Bootstrap<?> bootstrap, Injector injector) {
     Set<Class<? extends Bundle>> bundleClasses = reflections

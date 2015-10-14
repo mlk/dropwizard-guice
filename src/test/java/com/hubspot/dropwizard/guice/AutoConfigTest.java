@@ -5,12 +5,14 @@ import com.google.inject.Injector;
 import com.hubspot.dropwizard.guice.objects.*;
 import io.dropwizard.Bundle;
 import io.dropwizard.jackson.Jackson;
+import io.dropwizard.jetty.MutableServletContextHandler;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.AdminEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +83,21 @@ public class AutoConfigTest {
     }
 
     @Test
+    public void addServlets() {
+        //given
+        when(environment.getApplicationContext()).thenReturn(mock(MutableServletContextHandler.class));
+
+        //when
+        autoConfig.run(environment, injector);
+
+        //then
+        verify(environment.getApplicationContext()).addServlet(new ServletHolder("/test/servlet", injector.getInstance(InjectedServlet.class)), "/test/servlet");
+    }
+
+    @Test
     public void interfaceResourcesNotAdded() {
+
+
         //when
         autoConfig.run(environment, injector);
 
