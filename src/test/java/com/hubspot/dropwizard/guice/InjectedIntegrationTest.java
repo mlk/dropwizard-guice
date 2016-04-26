@@ -1,6 +1,7 @@
 package com.hubspot.dropwizard.guice;
 
 import com.google.common.io.Resources;
+import com.hubspot.dropwizard.guice.objects.InjectedBundle;
 import com.hubspot.dropwizard.guice.objects.TestApplication;
 import com.squarespace.jersey2.guice.BootstrapUtils;
 import io.dropwizard.Configuration;
@@ -68,7 +69,6 @@ public class InjectedIntegrationTest {
         assertThat(message).isEqualTo("this DAO was bound just-in-time");
     }
 
-
     @Test
     public void shouldUseServlet() {
 
@@ -82,4 +82,8 @@ public class InjectedIntegrationTest {
         assertThat(message).isEqualTo("from the servlet");
     }
 
+    @Test
+    public void shouldRunInjectedBundle() {
+        assertThat(Boolean.getBoolean(InjectedBundle.MARKER)).isTrue();
+    }
 }

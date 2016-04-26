@@ -9,10 +9,12 @@ the dropwizard environment upon service start.
         <dependency>
             <groupId>com.hubspot.dropwizard</groupId>
             <artifactId>dropwizard-guice</artifactId>
-            <version>0.8.X</version>
+            <version>0.8.4.0</version>
         </dependency>
     </dependencies>
 ```
+
+A list of available versions can be found at https://github.com/HubSpot/dropwizard-guice/releases
 
 Simply install a new instance of the bundle during your service initialization
 ```java
@@ -129,7 +131,7 @@ public class HelloWorldModule extends AbstractModule {
 
 ## Injector Factory
 You can also replace the default Guice `Injector` by implementing your own `InjectorFactory`. For example if you want 
-to use [Governator](https://github.com/Netflix/governator), you can set the following InjectorFactory (using Jav8 Lambda)
+to use [Governator](https://github.com/Netflix/governator), you can set the following InjectorFactory (using Java 8 Lambda)
 when initializing the GuiceBundle:
 
 ```java
